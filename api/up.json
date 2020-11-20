@@ -1,0 +1,8 @@
+{
+  "name": "laps",
+  "profile": "up",
+  "regions": [
+    "us-west-2"
+  ],
+  "runtime": "nodejs12.x"
+}
