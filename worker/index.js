@@ -31,7 +31,7 @@ function escapeToHTML(input) {
   return input.replace(/[&<>]/g, (s) => `&${map[s]};`);
 }
 
-function render(children) {
+function renderToString(children) {
   const output = [];
 
   function consumeIterable(iteratable) {
@@ -163,48 +163,94 @@ function *SharedStyle() {
   yield '</style>';
 }
 
+function* LighthouseNav(keys) {
+  yield '<nav>';
+  yield '<ul>';
+  
+  for (const { name } of keys) {
+    yield '<li>';
+    const [domain, date, timestamp] = name.split(' ');
+    const url = `/${domain}/${date} ${timestamp}.html`;
+    yield `<a href="${url}">${name}</a>`;
+  }
+  
+  yield '</nav>';
+}
+
+const htmlStart = `<!doctype html><html lang=en><meta charset=utf-8><meta name=viewport content="width=device-width">`;
+
+function LighthouseResultPage(domain, json) {
+  const { audits, requestedUrl, lighthouseVersion } = json.lighthouseResult;
+  return renderToString([
+    html`${htmlStart}
+  ${Meta.Title(`Speed of ${domain}`)}
+  ${SharedStyle()}
+  <body>
+  <nav class="measure">
+  <ul>
+  <li><a href="/">Home</a>
+  </ul>
+  </nav>
+  <main>
+  <h1 class="measure">${requestedUrl}: Lighthouse ${lighthouseVersion}</h1>
+  <section class="measure">
+  <h2>Audits</h2>
+  <div style="display: grid; grid-auto-columns: minmax(300px, auto);">
+  ${Object.keys(audits).map(auditID => AuditArticle(audits[auditID]))}
+  </div>
+  </section>
+  <details>
+  <summary>Raw results</summary>
+  <pre>${JSON.stringify(audits, null, 2)}</pre>
+  </details>
+  </main>
+  `]);
+}
+
+function LighthouseListPage(keys) {
+  return renderToString([
+    html`${htmlStart}
+  ${Meta.Title('List of lighthouse results')}
+  ${SharedStyle()}
+  <body>
+  <main>
+  <h1 class="measure">Lighthouse results</h1>
+  <section class="measure">
+  ${LighthouseNav(keys)}
+  </section>
+  </main>
+  `]);
+}
+
 /**
  * Respond with results
  * @param {Request} request
  */
 async function handleRequest(request) {
   try {
-    const url = new URL(request.url);
-    const [, ...components] = url.pathname.split('/');
+    const { pathname } = new URL(request.url);
+    const [, ...components] = pathname.split('/');
     if (components.length === 2 && new Set(['icing.space', 'components.guide']).has(components[0])) {
+      const domain = components[0];
       const [encodedKey, extension] = components[1].split('.');
       const key = decodeURIComponent(encodedKey);
-      const json = await PSI.get(`${components[0]} ${key}`, 'json');
+      const json = await PSI.get(`${domain} ${key}`, 'json');
       
       if (extension === 'html') {
-        const { audits, requestedUrl, lighthouseVersion } = json.lighthouseResult;
         var contentType = 'text/html';
-        var encodedResult = render([
-          html`<!doctype html><html lang=en><meta charset=utf-8><meta name=viewport content="width=device-width">
-        ${Meta.Title('Speed of icing.space')}
-        ${SharedStyle()}
-        <body>
-        <main>
-        <h1 class="measure">${requestedUrl}: Lighthouse ${lighthouseVersion}</h1>
-        <section class="measure">
-        <h2>Audits</h2>
-        <div style="display: grid; grid-auto-columns: minmax(300px, auto);">
-        ${Object.keys(audits).map(auditID => AuditArticle(audits[auditID]))}
-        </div>
-        </section>
-        <details>
-        <summary>Raw results</summary>
-        <pre>${JSON.stringify(audits, null, 2)}</pre>
-        </details>
-        </main>
-        `
-      ]);
+        var encodedResult = LighthouseResultPage(domain, json);
       } else {
         var result = json;
       }
     } else {
       const { keys } = await PSI.list();
-      var result = { version: '0.1', keys };
+      
+      if (/\.json/.test(pathname)) {
+        var result = { version: '0.1', keys };
+      } else {
+        var contentType = 'text/html';
+        var encodedResult = LighthouseListPage(keys);
+      }
     }
     
     return new Response(typeof encodedResult !== 'undefined' ? encodedResult : JSON.stringify(result), {
