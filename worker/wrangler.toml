@@ -1,8 +1,8 @@
-name = "laps"
+name = "pending-space"
 type = "javascript"
 account_id = "8cb711746bd0906ad5c15a19f1d2dd88"
 workers_dev = true
-route = ""
+route = "*.pending.space/*"
 zone_id = ""
 kv_namespaces = [ 
  { binding = "PSI", id = "9439a095e8ef4740aa7d3d8e663452af" }
