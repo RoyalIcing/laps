@@ -1,4 +1,7 @@
-deploy_staging:
+dev_api:
+	cd api && npm ci && npm start
+
+staging:
 	cd api && up staging
 
 deploy:

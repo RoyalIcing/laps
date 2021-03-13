@@ -4,5 +4,9 @@
   "regions": [
     "us-west-2"
   ],
-  "runtime": "nodejs12.x"
+  "runtime": "nodejs12.x",
+  "proxy": {
+    "timeout": 25,
+    "listen_timeout": 25
+  }
 }

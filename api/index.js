@@ -7,7 +7,10 @@ http.createServer(async (req, res) => {
   const targetURL = searchParams.get('url') || 'https://icing.space/';
   
   const { data } = await psi(targetURL);
-  res.setHeader('content-type', 'application/json');
   const jsonEncoded = JSON.stringify(data);
+  res.writeHead(200, {
+    'content-type': 'application/json',
+    'content-length': Buffer.byteLength(jsonEncoded)
+  });
   res.end(jsonEncoded);
 }).listen(PORT)
