@@ -1,3 +1,6 @@
+dev:
+	cd worker && wrangler dev
+
 dev_api:
 	cd api && npm ci && npm start
 

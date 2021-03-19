@@ -1,11 +1,11 @@
 name = "pending-space"
-type = "javascript"
+type = "webpack"
 account_id = "8cb711746bd0906ad5c15a19f1d2dd88"
 workers_dev = true
 route = "*.pending.space/*"
 zone_id = ""
 kv_namespaces = [ 
- { binding = "PSI", id = "9439a095e8ef4740aa7d3d8e663452af" }
+ { binding = "PSI", preview_id = "c7934e14c1f64ab2ba71a88668f77ec4", id = "9439a095e8ef4740aa7d3d8e663452af" }
 ]
 
 [triggers]
