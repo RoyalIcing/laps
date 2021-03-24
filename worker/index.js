@@ -11,16 +11,21 @@ addEventListener('fetch', (event) => {
 const domains = [
   'components.guide',
   'icing.space',
+  'www.elevatepartners.com.au',
+  'dev.to',
+  'medium.com',
+  'web.dev',
+  'github.com',
   'stratechery.com',
   'daringfireball.net',
   'www.theverge.com',
-  'dev.to',
   'remix.run',
-  'web.dev',
+  'hotwire.dev',
   'preactjs.com',
+  'basecamp.com',
   'webflow.com',
-  'nomadlist.com',
-]
+  'nomadlist.com'
+];
 
 /**
  * Run psi
