@@ -7,8 +7,10 @@ dev_api:
 staging:
 	cd api && up staging
 
-deploy:
+production:
 	cd worker && wrangler publish
+
+deploy: production
 
 logs:
 	cd api && up logs
