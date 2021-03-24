@@ -22,6 +22,7 @@ const domains = [
   'remix.run',
   'hotwire.dev',
   'preactjs.com',
+  'nova.app',
   'basecamp.com',
   'webflow.com',
   'nomadlist.com'
